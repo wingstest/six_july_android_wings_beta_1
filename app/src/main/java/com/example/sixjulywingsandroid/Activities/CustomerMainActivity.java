@@ -74,76 +74,80 @@ public class CustomerMainActivity extends AppCompatActivity implements Navigatio
             @SuppressLint("LongLogTag")
             @Override
             public void onDrawerClosed(View drawerView) {
-                int id = menuItem.getItemId();
-                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-                if (BUTTON_SKIPPED) {
-                    Log.d(TAG, "onDrawerClosed: skipped below");
-                    if (id == R.id.nav_restaurant) {
-                        Log.d(TAG, "onDrawerClosed: nav restaurant skipped below IF");
-                        Toast.makeText(CustomerMainActivity.this, "REST SKIPPED BELOW Customer", Toast.LENGTH_SHORT).show();
-                    } else if (id == R.id.nav_tray) {
-                        if (Objects.equals(screen, "tray")) {
-                            Log.d(TAG, "onDrawerClosed: nav tray skipped below IF");
-                            Toast.makeText(CustomerMainActivity.this, "TRAY SKIPPED BELOW Customer", Toast.LENGTH_SHORT).show();
-                            handleLoginRequired();
+                if (menuItem != null) {
+                    int id = menuItem.getItemId();
+                    FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                    if (BUTTON_SKIPPED) {
+                        Log.d(TAG, "onDrawerClosed: skipped below");
+                        if (id == R.id.nav_restaurant) {
+                            Log.d(TAG, "onDrawerClosed: nav restaurant skipped below IF");
+                            Toast.makeText(CustomerMainActivity.this, "REST SKIPPED BELOW Customer", Toast.LENGTH_SHORT).show();
+                        } else if (id == R.id.nav_tray) {
+                            if (Objects.equals(screen, "tray")) {
+                                Log.d(TAG, "onDrawerClosed: nav tray skipped below IF");
+                                Toast.makeText(CustomerMainActivity.this, "TRAY SKIPPED BELOW Customer", Toast.LENGTH_SHORT).show();
+                                handleLoginRequired();
+                            } else {
+                                Log.d(TAG, "onDrawerClosed: nav tray if_else Skipped");
+                                handleLoginRequired();
+                            }
+                        } else if (id == R.id.nav_order) {
+                            if (Objects.equals(screen, "order")) {
+                                Log.d(TAG, "onDrawerClosed: nav order skipped below IF");
+                                Toast.makeText(CustomerMainActivity.this, "ORDERS  SKIPPED BELOWCustomer", Toast.LENGTH_SHORT).show();
+                                handleLoginRequired();
+                            } else {
+                                Log.d(TAG, "onDrawerClosed: nav order if_else Skipped");
+                                handleLoginRequired();
+                            }
                         } else {
-                            Log.d(TAG, "onDrawerClosed: nav tray if_else Skipped");
-                            handleLoginRequired();
-                        }
-                    } else if (id == R.id.nav_order) {
-                        if (Objects.equals(screen, "order")) {
-                            Log.d(TAG, "onDrawerClosed: nav order skipped below IF");
-                            Toast.makeText(CustomerMainActivity.this, "ORDERS  SKIPPED BELOWCustomer", Toast.LENGTH_SHORT).show();
-                            handleLoginRequired();
-                        } else {
-                            Log.d(TAG, "onDrawerClosed: nav order if_else Skipped");
-                            handleLoginRequired();
+                            Log.d(TAG, "onDrawerClosed: nav logout skipped below IF");
+                            Toast.makeText(CustomerMainActivity.this, "LOGOUT SKIPPED BELOW Customer", Toast.LENGTH_SHORT).show();
+                            Log.d(TAG, "onDrawerClosed: logout clicked");
+//                        finishAffinity();
+                            Intent intent = new Intent(getApplicationContext(), SignInActivity.class);
+                            startActivity(intent);
                         }
                     } else {
-                        Log.d(TAG, "onDrawerClosed: nav logout skipped below IF");
-                        Toast.makeText(CustomerMainActivity.this, "LOGOUT SKIPPED BELOW Customer", Toast.LENGTH_SHORT).show();
-                        Log.d(TAG, "onDrawerClosed: logout clicked");
-//                        finishAffinity();
-                        Intent intent = new Intent(getApplicationContext(), SignInActivity.class);
-                        startActivity(intent);
+                        BUTTON_SKIPPED = false;
+                        if (id == R.id.nav_restaurant) {
+                            Log.d(TAG, "onDrawerClosed: nav restaurant ELSE");
+                            Toast.makeText(CustomerMainActivity.this, "REST Customer", Toast.LENGTH_SHORT).show();
+                            transaction.setCustomAnimations(R.anim.fade_in, R.anim.fade_out);
+                            transaction.replace(R.id.content_frame, new RestaurantListFragment()).commit();
+                        } else if (id == R.id.nav_tray) {
+                            if (Objects.equals(screen, "tray")) {
+                                Log.d(TAG, "onDrawerClosed: nav tray ELSE");
+                                Toast.makeText(CustomerMainActivity.this, "TRAY Customer", Toast.LENGTH_SHORT).show();
+                                transaction.setCustomAnimations(R.anim.fade_in, R.anim.fade_out);
+                                transaction.replace(R.id.content_frame, new TrayFragment()).commit();
+                            } else {
+                                transaction.setCustomAnimations(R.anim.fade_in, R.anim.fade_out);
+                                transaction.replace(R.id.content_frame, new TrayFragment()).commit();
+                            }
+                        } else if (id == R.id.nav_order) {
+                            if (Objects.equals(screen, "order")) {
+                                Toast.makeText(CustomerMainActivity.this, "ORDERS Customer", Toast.LENGTH_SHORT).show();
+                                transaction.setCustomAnimations(R.anim.fade_in, R.anim.fade_out);
+                                transaction.replace(R.id.content_frame, new OrderFragment()).commit();
+                            } else {
+                                transaction.setCustomAnimations(R.anim.fade_in, R.anim.fade_out);
+                                transaction.replace(R.id.content_frame, new OrderFragment()).commit();
+                            }
+                        } else {
+                            Toast.makeText(CustomerMainActivity.this, "LOGOUT Customer", Toast.LENGTH_SHORT).show();
+                            Log.d(TAG, "onDrawerClosed: logout clicked");
+                            logoutToServer(sharedPref.getString("token", ""));
+                            SharedPreferences.Editor editor = sharedPref.edit();
+                            editor.remove("token");
+                            editor.apply();
+                            finishAffinity();
+                            Intent intent = new Intent(getApplicationContext(), SignInActivity.class);
+                            startActivity(intent);
+                        }
                     }
                 } else {
-                    BUTTON_SKIPPED = false;
-                    if (id == R.id.nav_restaurant) {
-                        Log.d(TAG, "onDrawerClosed: nav restaurant ELSE");
-                        Toast.makeText(CustomerMainActivity.this, "REST Customer", Toast.LENGTH_SHORT).show();
-                        transaction.setCustomAnimations(R.anim.fade_in, R.anim.fade_out);
-                        transaction.replace(R.id.content_frame, new RestaurantListFragment()).commit();
-                    } else if (id == R.id.nav_tray) {
-                        if (Objects.equals(screen, "tray")) {
-                            Log.d(TAG, "onDrawerClosed: nav tray ELSE");
-                            Toast.makeText(CustomerMainActivity.this, "TRAY Customer", Toast.LENGTH_SHORT).show();
-                            transaction.setCustomAnimations(R.anim.fade_in, R.anim.fade_out);
-                            transaction.replace(R.id.content_frame, new TrayFragment()).commit();
-                        } else {
-                            transaction.setCustomAnimations(R.anim.fade_in, R.anim.fade_out);
-                            transaction.replace(R.id.content_frame, new TrayFragment()).commit();
-                        }
-                    } else if (id == R.id.nav_order) {
-                        if (Objects.equals(screen, "order")) {
-                            Toast.makeText(CustomerMainActivity.this, "ORDERS Customer", Toast.LENGTH_SHORT).show();
-                            transaction.setCustomAnimations(R.anim.fade_in, R.anim.fade_out);
-                            transaction.replace(R.id.content_frame, new OrderFragment()).commit();
-                        } else {
-                            transaction.setCustomAnimations(R.anim.fade_in, R.anim.fade_out);
-                            transaction.replace(R.id.content_frame, new OrderFragment()).commit();
-                        }
-                    } else {
-                        Toast.makeText(CustomerMainActivity.this, "LOGOUT Customer", Toast.LENGTH_SHORT).show();
-                        Log.d(TAG, "onDrawerClosed: logout clicked");
-                        logoutToServer(sharedPref.getString("token", ""));
-                        SharedPreferences.Editor editor = sharedPref.edit();
-                        editor.remove("token");
-                        editor.apply();
-                        finishAffinity();
-                        Intent intent = new Intent(getApplicationContext(), SignInActivity.class);
-                        startActivity(intent);
-                    }
+                    Log.d(TAG, "onDrawerClosed: menu item is null");
                 }
             }
         });
